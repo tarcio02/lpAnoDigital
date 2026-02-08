@@ -19,27 +19,15 @@ type FormData = {
 
 const isEmailValid = (email: string) => /\S+@\S+\.\S+/.test(email)
 
-const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
+const Formulario = forwardRef<HTMLDivElement>((_, ref) => {
   const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) || ''
   const SUPABASE_ANON = (import.meta.env.VITE_SUPABASE_ANON_KEY as string) || ''
-  const EDGE_FN = import.meta.env.VITE_EDGE_FN || 'send-email'
-
-  // evita // na URL se alguém colocar barra no .env
-  const BASE_URL = SUPABASE_URL.replace(/\/+$/, '')
-  const EDGE_URL = `${BASE_URL}/functions/v1/${EDGE_FN}`
 
   const [serverMsg, setServerMsg] = useState<string | null>(null)
-  const [modal, setModal] = useState({
-    show: false,
-    loading: false,
-    erro: true,
-  })
+  const [modal, setModal] = useState({ show: false, loading: false, erro: true })
 
-  const showModal = (loading = true, erro = false) => {
-    setModal({ show: true, loading, erro })
-  }
+  const showModal = (loading = true, erro = false) => setModal({ show: true, loading, erro })
 
-  // alerta cedo se esquecer envs
   if (!SUPABASE_URL || !SUPABASE_ANON) {
     console.error('Faltam variáveis VITE_SUPABASE_URL e/ou VITE_SUPABASE_ANON_KEY')
   }
@@ -47,8 +35,7 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
   const onlyDigits = (v: string) => v.replace(/\D/g, '')
 
   const formatPhoneBR = (v: string) => {
-    // recebe apenas dígitos e devolve formatado
-    const s = onlyDigits(v).slice(0, 11) // limita a 11 dígitos
+    const s = onlyDigits(v).slice(0, 11)
     if (s.length <= 2) return `(${s}`
     if (s.length <= 7) return `(${s.slice(0, 2)}) ${s.slice(2)}`
     if (s.length <= 11) return `(${s.slice(0, 2)}) ${s.slice(2, 7)}-${s.slice(7)}`
@@ -84,9 +71,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // if (isSubmitting) return
-
-  // INPUTS, SELECTS e TEXTAREA (exceto telefone/cnpj/checkbox que têm handlers próprios)
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
   ) => {
@@ -94,21 +78,18 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
     setFormData((prev) => ({ ...prev, [id]: value }))
   }
 
-  // Formata telefone enquanto digita
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.currentTarget
     const formatted = formatPhoneBR(value)
     setFormData((prev) => ({ ...prev, [id]: formatted }))
   }
 
-  // Mantém CNPJ como string, só permitindo dígitos (sem máscara, simples)
   const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.currentTarget
     const digits = onlyDigits(value).slice(0, 14)
     setFormData((prev) => ({ ...prev, [id]: digits }))
   }
 
-  // Checkbox de termos
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { checked } = e.currentTarget
     setFormData((prev) => ({ ...prev, termosAceitos: checked }))
@@ -157,11 +138,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
     return { ok: Object.keys(newErrors).length === 0, newErrors }
   }
 
-  const makeIdemKey = () =>
-    typeof crypto !== 'undefined' && crypto.randomUUID
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(16).slice(2)}`
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -176,71 +152,33 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
       return
     }
 
-    // 1) Sanitiza (mantive seus nomes originais)
-    const payload = {
-      nomepessoa: formData.nomePessoa.trim(),
-      email: formData.email.trim().toLowerCase(),
-      telefone: onlyDigits(formData.telefone),
-      nomeempresa: formData.nomeEmpresa.trim(),
-      cnpj: onlyDigits(formData.cnpj),
-      ramoselecionado: formData.ramoSelecionado,
-      funcionarios: formData.funcionarios,
-      fonte: formData.fonte ?? 'website',
-      desafio: formData.desafio.trim(),
-      termosaceitos: formData.termosAceitos,
-    }
-
-    // 2) Mapeia para o formato esperado pela Edge Function (lead)
-    const lead = {
-      name: payload.nomepessoa,
-      email: payload.email,
-      phone: payload.telefone,
-      company: payload.nomeempresa,
-      cnpj: payload.cnpj,
-      segment: payload.ramoselecionado,
-      employees: payload.funcionarios,
-      source: payload.fonte,
-      challenge: payload.desafio,
-      termsAccepted: payload.termosaceitos,
-    }
-
-    // 3) Chave de idempotência (opcional, mas recomendado – a Edge pode usar para evitar duplicatas)
-    const idem = makeIdemKey()
-
-    // 4) Chamada à Edge Function (servidor fará INSERT + EMAIL)
     try {
-      setIsSubmitting?.(true) // se você tiver esse state
-      showModal()
+      setIsSubmitting(true)
+      showModal(true, false)
 
-      const res = await fetch(EDGE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // ANON KEY do Supabase sempre nos dois headers:
-          apikey: SUPABASE_ANON,
-          Authorization: `Bearer ${SUPABASE_ANON}`,
-          // Idempotência opcional:
-          'X-Idempotency-Key': idem,
-        },
-        body: JSON.stringify({
-          lead,
-          // Você pode sobrescrever o assunto/HTML se quiser:
-          // subject: 'Recebemos seu cadastro! ✅',
-          // html: '<p>Obrigado por se cadastrar...</p>',
-        }),
+      const body = new URLSearchParams({
+        nomepessoa: formData.nomePessoa.trim(),
+        email: formData.email.trim().toLowerCase(),
+        telefone: onlyDigits(formData.telefone),
+        nomeempresa: formData.nomeEmpresa.trim(),
+        cnpj: onlyDigits(formData.cnpj),
+        ramoselecionado: formData.ramoSelecionado,
+        funcionarios: formData.funcionarios,
+        fonte: formData.fonte || 'website',
+        desafio: formData.desafio.trim(),
       })
+      await fetch(
+        'https://script.google.com/macros/s/AKfycbyH_XvrWUHoqtJRxJgSy9M-Us61ooF7PNTiKcFx-y0Z6cE-kkqK7DX7Du0Npjuteor6WA/exec',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body,
+        },
+      )
 
-      const data = await res.json().catch(() => ({}))
-
-      if (!res.ok || data?.ok !== true) {
-        // Mostra erro amigável
-        const msg = data?.error || 'Não foi possível concluir seu cadastro. Tente novamente.'
-        setServerMsg(msg)
-        console.error('Edge error:', data)
-        showModal(false, true)
-        return
-      }
-
+      // Sucesso
       setFormData({
         nomePessoa: '',
         email: '',
@@ -253,13 +191,14 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
         desafio: '',
         termosAceitos: false,
       })
-      showModal(false, false)
       setErrors({})
+      showModal(false, false)
     } catch (err) {
       console.error('Network/Unexpected error:', err)
-      // ex.: toast.error('Falha de conexão. Tente novamente em instantes.');
+      setServerMsg('Falha de conexão. Tente novamente em instantes.')
+      showModal(false, true)
     } finally {
-      setIsSubmitting?.(false)
+      setIsSubmitting(false)
     }
   }
 
@@ -269,11 +208,13 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
         <h2>Preencha e Concorra!</h2>
         <p>Sua empresa pode ser a próxima a ganhar um ano de agência grátis</p>
       </S.Title>
+
       {serverMsg && (
         <div role="alert" style={{ marginTop: 12 }}>
           {serverMsg}
         </div>
       )}
+
       <S.Form id="form" onSubmit={handleSubmit} noValidate>
         <div className="container">
           <div className="column">
@@ -286,7 +227,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
                 onChange={handleChange}
                 className={errors.nomePessoa ? 'erro' : ''}
               />
-
               {errors.nomePessoa && <small style={{ color: '#ff3f34' }}>{errors.nomePessoa}</small>}
             </div>
 
@@ -300,7 +240,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
                 placeholder="nome@empresa.com"
                 className={errors.email ? 'erro' : ''}
               />
-
               {errors.email && <small style={{ color: '#ff3f34' }}>{errors.email}</small>}
             </div>
 
@@ -313,7 +252,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
                 onChange={handleChange}
                 className={errors.nomeEmpresa ? 'erro' : ''}
               />
-
               {errors.nomeEmpresa && (
                 <small style={{ color: '#ff3f34' }}>{errors.nomeEmpresa}</small>
               )}
@@ -330,7 +268,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
                 onChange={handlePhoneChange}
                 className={errors.telefone ? 'erro' : ''}
               />
-
               {errors.telefone && <small style={{ color: '#ff3f34' }}>{errors.telefone}</small>}
             </div>
           </div>
@@ -367,7 +304,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
                 onChange={handleCnpjChange}
                 className={errors.cnpj ? 'erro' : ''}
               />
-
               {errors.cnpj && <small style={{ color: '#ff3f34' }}>{errors.cnpj}</small>}
             </div>
 
@@ -385,7 +321,6 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
                 <option value="21 a 50">21 a 50 funcionários</option>
                 <option value="50+">Mais de 50 funcionários</option>
               </select>
-
               {errors.funcionarios && (
                 <small style={{ color: '#ff3f34' }}>{errors.funcionarios}</small>
               )}
@@ -410,6 +345,7 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
             </div>
           </div>
         </div>
+
         <div className="bottom">
           <div className="input">
             <label htmlFor="desafio">
@@ -421,7 +357,7 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
               value={formData.desafio}
               onChange={handleChange}
               className={errors.desafio ? 'erro' : ''}
-            ></textarea>
+            />
             {errors.desafio && <small style={{ color: '#ff3f34' }}>{errors.desafio}</small>}
           </div>
 
@@ -456,6 +392,7 @@ const Formulario = forwardRef<HTMLDivElement>((props, ref) => {
           </S.Button>
         </div>
       </S.Form>
+
       <ModalForm
         onClose={() => setModal({ show: false, erro: false, loading: false })}
         show={modal.show}

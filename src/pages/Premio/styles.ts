@@ -3,6 +3,8 @@ import { theme } from '../../styles/theme'
 
 export const StylesPremio = styled.div`
   display: flex;
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   padding: ${theme.spaces.paddingMobile};
 
@@ -31,33 +33,38 @@ export const Titulo = styled.div`
 
 export const Container = styled.div`
   display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
   gap: 40px;
-  flex-direction: column;
+  /* flex-direction: column; */
   margin-top: 50px;
 
-  @media (min-width: 601px) {
+
+  /* @media (min-width: 601px) {
     justify-content: space-between;
     align-items: center;
   }
 
   @media (min-width: 769px) {
     flex-direction: row;
-    width: auto;
+    max-width: 1360px;
     flex-wrap: wrap;
     gap: 24px;
-  }
+  } */
 `
 
 export const Card = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   text-align: center;
-  gap: 24px;
   padding: 32px;
   color: #333333;
   width: 100%;
+  max-width: 280px;
+  height: 280px;
   border-radius: 16px;
   background: rgba(0, 0, 0, 0.1);
 
@@ -80,8 +87,8 @@ export const Card = styled.div`
   }
 
   @media (min-width: 769px) {
-    height: 260px;
-    width: 360px;
+    /* height: 260px;
+    width: 360px; */
 
     .icon {
       height: 56px;
@@ -103,32 +110,3 @@ export const Card = styled.div`
   }
 `
 
-// export const CardPremio = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: center;
-//   align-items: center;
-//   text-align: center;
-//   gap: 16px;
-//   border-radius: 16px;
-//   margin-top: 40px;
-//   padding: 32px;
-//   background: linear-gradient(to right, #008dfd, #e91fe9, #ea1fe9);
-
-//   h3 {
-//     font-size: 24px;
-//   }
-
-//   h2 {
-//     font-size: 32px;
-//   }
-
-//   p {
-//     font-size: 16px;
-//   }
-
-//   @media (min-width: 601px) {
-//     width: 360px;
-//     margin: 40px auto 0;
-//   }
-// `

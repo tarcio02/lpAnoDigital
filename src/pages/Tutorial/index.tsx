@@ -5,7 +5,7 @@ const Tutorial = () => {
     <S.StylesTutorial>
       <S.Title>
         <h2>Como Participar?</h2>
-        <p>Simples e rápido - apenas 3 passos</p>
+        <p>Simples — apenas 3 passos</p>
       </S.Title>
       <S.Container>
         <S.Card>
@@ -16,7 +16,7 @@ const Tutorial = () => {
         <S.Card>
           <div className="icone">2</div>
           <h3>Aguarde o Sorteio</h3>
-          <p>O sorteio será realizado no dia 15 de setembro de 2025.</p>
+          <p>O sorteio será realizado no dia 15 de dezembro de 2025.</p>
         </S.Card>
         <S.Card>
           <div className="icone">3</div>

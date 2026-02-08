@@ -7,12 +7,12 @@ import localizaIcon from '../../assets/icons/localizacaoIcon.png'
 
 import marketing from '../../assets/images/marketing.svg'
 
-const Sorteio = forwardRef<HTMLDivElement>((props, ref) => {
+const Sorteio = forwardRef<HTMLDivElement>((_, ref) => {
   return (
     <S.StylesSorteio ref={ref}>
       <S.Title>
-        <h1>O que é o Ano Digital B7?</h1>
-        <p>Uma oportunidade única para transformar sua empresa</p>
+        <h1>O que é o ano digital B7?</h1>
+        <p>Uma oportunidade única para transformar sua empresa.</p>
       </S.Title>
       <S.Container>
         <div className="column text">
@@ -24,7 +24,7 @@ const Sorteio = forwardRef<HTMLDivElement>((props, ref) => {
           <p>
             O ganhador do sorteio receberá <strong>12 meses completos</strong> de serviços de
             agência digital, incluindo estratégia, criação de conteúdo, gestão de tráfego pago e
-            muito mais - tudo isso <strong>totalmente gratuito!</strong>
+            muito mais — tudo isso <strong>totalmente gratuito!</strong>
           </p>
           <S.Premio>
             <li className="item">

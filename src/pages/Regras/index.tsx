@@ -10,20 +10,36 @@ const Regras = () => {
         <S.Lista>
           <li className="item">
             <img src={check} alt="Icone check" />
-            Donos de empresas em Vitória da Conquista
+            Somente empresas localizadas em Vitória da Conquista.
           </li>
           <li className="item">
             <img src={check} alt="Icone check" />
-            Empresas de qualquer porte ou segmento
+            Faturamento mínimo de R$ 50 mil/mês.
           </li>
           <li className="item">
             <img src={check} alt="Icone check" />
-            Interesse em crescer através do marketing digital
+            Apenas uma inscrição por empresa.
+          </li>
+          <li className="item">
+            <img src={check} alt="Icone check" />
+            Não é válido para clientes e ex-clientes da Branding7.
+          </li>
+          <li className="item">
+            <img src={check} alt="Icone check" />
+            Tráfego pago é obrigatório — necessário para que as estratégias funcionem.*
+          </li>
+          <li className="item">
+            <img src={check} alt="Icone check" />
+            Treinamento e assessoria do CRM inclusos.**
           </li>
         </S.Lista>
         <S.Paragrafo>
-          Esta campanha é exclusiva para empresários de Vitória da Conquista que desejam
-          revolucionar seus negócios e fazer parte da transformação digital da região.
+          Esta campanha é exclusiva para empresários de Vitória da Conquista. <br />
+          Inscrições incompletas serão desclassificadas. <br />
+          *Verba de anúncios será custeada pela empresa ganhadora.
+          <br />
+          **O custo da plataforma de CRM e demais plugins e licenças de terceiros não estão
+          inclusos.
         </S.Paragrafo>
       </S.Container>
     </S.StylesRegras>

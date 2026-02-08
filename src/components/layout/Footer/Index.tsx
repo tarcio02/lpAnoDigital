@@ -27,7 +27,7 @@ const Footer = () => {
           <div className="contato">
             <img src={telefone} alt="Ìcone de carta" />
             <a href="https://wa.me/557781223827" target="_blank">
-              (77) 99999-9999
+              (77) 98122-3827
             </a>
           </div>
           <div className="contato">

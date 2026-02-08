@@ -6,16 +6,15 @@ import graficoIcon from '../../assets/icons/graficoIcon.png'
 import cifraoIcon from '../../assets/icons/cifraoIcon.png'
 import maosIcon from '../../assets/icons/iconParceria.png'
 
-const Metodo = forwardRef<HTMLDivElement>((props, ref) => {
+const Metodo = forwardRef<HTMLDivElement>((_, ref) => {
   return (
     <S.StylesMetodo ref={ref}>
       <S.Title>
-        <h1>Conheça o Poder do Método B7-3X</h1>
-        <p className="subTitulo">A metodologia que multiplica seus resultados por 3x</p>
+        <h1>Conheça o poder do Método B7-3X</h1>
+        <p className="subTitulo">A metodologia que multiplica seus resultados por 3x.</p>
         <p className="paragrafo">
-          O Método B7-3X é nossa metodologia proprietária que combina estratégias comerciais
-          digitais avançadas com foco em conteúdo em vídeo para acelerar o crescimento do seu
-          negócio.
+          O Método B7-3X é nossa metodologia própia que combina estratégias comerciais digitais
+          avançadas com foco em conteúdo em vídeo para acelerar o crescimento do seu negócio.
         </p>
       </S.Title>
       <S.Container>
@@ -31,7 +30,9 @@ const Metodo = forwardRef<HTMLDivElement>((props, ref) => {
             <img src={graficoIcon} alt="" />
           </div>
           <h3>3x Crescimento</h3>
-          <p>Promessa de até 3x crescimento no faturamento ou engajamento em 6-12 meses.</p>
+          <p>
+            Promessa de até 3x de crescimento no faturamento ou no engajamento, em 6 a 12 meses.
+          </p>
         </S.Card>
         <S.Card>
           <div className="icon">

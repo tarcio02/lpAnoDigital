@@ -11,7 +11,7 @@ import dataBaseIcon from '../../assets/icons/bancoDadosIcon.png'
 import graficoIcon from '../../assets/icons/metasIcon.png'
 import estrelaIcon from '../../assets/icons/estrelaIcon.png'
 
-const Premio = forwardRef<HTMLDivElement>((props, ref) => {
+const Premio = forwardRef<HTMLDivElement>((_, ref) => {
   const cards = [
     {
       id: 1,

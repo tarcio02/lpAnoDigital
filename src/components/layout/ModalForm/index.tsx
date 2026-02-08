@@ -33,7 +33,7 @@ const ModalForm: React.FC<PropsTypes> = ({ show, onClose, erro, loading }) => {
             <Title>
               {erro
                 ? 'Infelizmente houve um erro, tente novamente mais terde.'
-                : 'Sua candidatura foi realizada com sucesso, aguarde o nosso email de confirmação'}
+                : 'Sua candidatura foi realizada com sucesso, em breve entraremos em contato'}
             </Title>
             <Button error={erro} onClick={onClose}>
               Fechar
